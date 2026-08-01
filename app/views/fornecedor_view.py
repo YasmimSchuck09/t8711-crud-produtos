@@ -1,61 +1,308 @@
-from colorama import init, Fore, Style
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-init(autoreset=True)
+from app.models.fornecedor import Fornecedor
 
-class Fornecedor_Terminal_View:
-    def __init__(self):
-        self.titulo_sistema = "=== CRUD DE FORNECEDORES (MVC) ==="
-    
-    def renderizar_menu(self):
-        print(Fore.CYAN + Style.BRIGHT + self.titulo_sistema)
-        print(f"1 - Cadastrar fornecedor")
-        print(f"2 - Listar fornecedores")
-        print(f"3 - Atualizar fornecedor")
-        print(f"4 - Excluir fornecedor")
-        print(f"0 - Sair")
-        print(Fore.CYAN + "="*50)
-        try:
-            return int(input("Escolha uma opção: "))
-        except ValueError:
-            return -1
-    def ler_campo(self, rotulo, valor_atual=None):
-        if valor_atual is not None:
-            prompt = f"{rotulo} [{Fore.GREEN}{valor_atual}{Style.RESET_ALL}]: "
-        else:
-            prompt = f"{rotulo}: "
-        valor = input(prompt)
-        if valor == "" and valor_atual is not None:
-            return valor_atual
-        return valor  
-            
-    def ler_dados_fornecedor(self, fornecedor_existente=None):
-        print(Fore.CYAN + Style.BRIGHT + "=== CADASTRO DE FORNECEDOR ===")
-        razao_social = self.ler_campo("Razão social", fornecedor_existente.razao_social if fornecedor_existente else None)
-        nome_fantasia = self.ler_campo("Nome fantasia", fornecedor_existente.nome_fantasia if fornecedor_existente else None)
-        cnpj = self.ler_campo("CNPJ", fornecedor_existente.cnpj if fornecedor_existente else None)
-        sla_atendimento = int(self.ler_campo("SLA de atendimento", str(fornecedor_existente.sla_atendimento) if fornecedor_existente else None))
-        return razao_social, nome_fantasia, cnpj, sla_atendimento
-
-    def ler_id(self):
-        return input("Digite o ID do fornecedor: ")
-    
-    def exibir_fornecedores(self, fornecedores):
-        print(Fore.YELLOW + "\n--- TABELA DE FORNECEDORES ---")
-        if not fornecedores:
-            print("Nenhum fornecedor cadastrado")
-            return
-        print(f"{'ID':<4} | {'RAZÃO SOCIAL':<20} | {'NOME FANTASIA':<20} | {'CNPJ':<15} | {'SLA':<5}")
-        print("-"*80)
-        for p in fornecedores:
-            print(f"{p.id:<4} | {p.razao_social:<20} | {p.nome_fantasia:<20} | {p.cnpj:<15} | {p.sla_atendimento:<5}")
-        print("-"*80)
-    
-    def exibir_mensagem(self, mensagem, sucesso=True):
-        cor = Fore.GREEN if sucesso else Fore.RED
-        print(cor + f"\n[STATUS] {mensagem}\n")
-        self.aguardar_entrada()
-
-    def aguardar_entrada(self):
-        input(Fore.WHITE + "Pressione Enter para continuar...")
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
 
 
+class Fornecedor_View:
+    def __init__(self, root, controller):
+        self.root = root
+        self.controller = controller 
+        self.configurar_janela()
+        self.criar_componentes()
+        self.configurar_treeview()
+        self.configurar_eventos()
+
+    def configurar_janela(self):
+        self.root.title("CRUD de Fornecedores")
+        self.root.geometry("800x600")
+        self.root.resizable(False, False)
+  
+
+    def criar_componentes(self):
+        self.lbl_titulo = tk.Label(
+            self.root,
+            text = "Cadastro de Fornecedores",
+            font = ("Arial", 16, "bold"),
+        )
+        self.lbl_titulo.grid(
+            row = 0,
+            column = 0,
+            columnspan = 4,
+            padx = 5,
+            pady = 5
+        )
+        self.frm_dados = tk.LabelFrame(
+            self.root,
+            text = "Dados do fornecedor"
+        )
+        self.frm_dados.grid(
+            row = 1,
+            column = 0,
+            columnspan=4,
+            padx = 10,
+            pady = 5,
+            sticky = "ew"
+        )
+        self.lbl_id = tk.Label(
+            self.frm_dados,
+            text = "ID:"
+        )
+        self.lbl_id.grid(
+            row = 0,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_id = tk.Entry(
+            self.frm_dados,
+            width = 10,
+            state = "readonly"
+        )
+        self.txt_id.grid(
+            row = 0,
+            column= 1,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_razao_social = tk.Label(
+            self.frm_dados,
+            text = "Razão social:"
+        )
+        self.lbl_razao_social.grid(
+            row = 1,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_razao_social = tk.Entry(
+            self.frm_dados,
+            width = 40
+        )
+        self.txt_razao_social.grid(
+            row = 1,
+            column = 1,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_nome_fantasia = tk.Label(
+            self.frm_dados,
+            text = "Nome fantasia:"
+        )
+        self.lbl_nome_fantasia.grid(
+            row = 1,
+            column = 2,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_nome_fantasia = tk.Entry(
+            self.frm_dados,
+            width = 40
+        )
+        self.txt_nome_fantasia.grid(
+            row = 1,
+            column = 3,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_cnpj = tk.Label(
+            self.frm_dados,
+            text = "CNPJ:"
+        )
+        self.lbl_cnpj.grid(
+            row = 2,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_cnpj = tk.Entry(
+            self.frm_dados,
+            width = 20
+        )
+        self.txt_cnpj.grid(
+            row = 2,
+            column = 1,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_sla = tk.Label(
+            self.frm_dados,
+            text = "SLA de atendimento:"
+        )
+        self.lbl_sla.grid(
+            row = 2,
+            column = 2,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_sla = tk.Entry(
+            self.frm_dados,
+            width = 20
+        )
+        self.txt_sla.grid(
+            row = 2,
+            column = 3,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.frm_botoes = tk.Frame(
+            self.frm_dados,
+            border = 2,
+            relief = "groove"
+        )
+        self.frm_botoes.grid(
+            row = 4,
+            column = 0,
+            padx = 10,
+            pady = 5,
+            columnspan = 4,
+        )
+        self.btn_novo = tk.Button(
+            self.frm_botoes,
+            text = "Novo",
+            width = 15
+        )
+        self.btn_novo.grid(
+            row = 0,
+            column = 0,
+            padx = 5,
+            pady = 5
+        )
+        self.btn_salvar = tk.Button(
+            self.frm_botoes,
+            text = "Salvar",
+            width = 15
+        )
+        self.btn_salvar.grid(
+            row = 0,
+            column = 1,
+            padx = 5,
+            pady = 5
+        )        
+        self.btn_alterar = tk.Button(
+            self.frm_botoes,
+            text = "Alterar",
+            width = 15
+        )
+        self.btn_alterar.grid(
+            row = 0,
+            column = 2,
+            padx = 5,
+            pady = 5
+        )        
+        self.btn_excluir = tk.Button(
+            self.frm_botoes,
+            text = "Excluir",
+            width = 15
+        )
+        self.btn_excluir.grid(
+            row = 0,
+            column = 3,
+            padx = 5,
+            pady = 5
+        )   
+        self.btn_fechar = tk.Button(
+            self.frm_botoes,
+            text = "Fechar",
+            width = 15
+        )
+        self.btn_fechar.grid(
+            row = 0,
+            column = 4,
+            padx = 5,
+            pady = 5
+        )      
+        
+        self.tbl_fornecedores = ttk.Treeview( #adicionar a tabela  -------------
+            self.root,
+            height = 10 #altura, considerado em linhas 
+        )
+        self.tbl_fornecedores.grid(
+            row = 3,
+            column = 0,
+            columnspan= 4,
+            padx = 10,
+            pady = 10,
+            sticky = "nsew" #de norte a sul / leste a oeste
+        )
+
+
+    def configurar_treeview(self): #configurar a tabela
+        self.tbl_fornecedores["columns"] = (
+            "id",
+            "razao_social",
+            "cnpj"
+        )
+        self.tbl_fornecedores.column( 
+            "#0",
+            width = 0,
+            stretch = False
+        )
+        self.tbl_fornecedores.column(
+            "id",
+            width = 10
+        )
+        self.tbl_fornecedores.column(
+            "razao_social",
+            width = 50
+        )
+        self.tbl_fornecedores.column(
+            "cnpj",
+            width = 20
+        )
+
+        self.tbl_fornecedores.heading( #titulo das tabelas 
+            "id",
+            text = "ID"
+        )
+        self.tbl_fornecedores.heading(
+            "razao_social",
+            text = "Razão social"
+        )
+        self.tbl_fornecedores.heading(
+            "cnpj",
+            text = "CNPJ"
+        )
+
+
+    def configurar_eventos(self):
+         self.btn_novo.config(
+             command = self.controller.new
+         )
+         self.btn_salvar.config(
+             command = self.controller.save
+         )
+         self.btn_alterar.config(
+             command = self.controller.update
+         )
+         self.btn_excluir.config(
+             command = self.controller.delete
+         )
+
+    def limpar_campos(self):
+        self.txt_id.delete(0, tk.END)
+        self.txt_razao_social.delete(0, tk.END)
+        self.txt_nome_fantasia.delete(0, tk.END)
+        self.txt_cnpj.delete(0, tk.END)
+        self.txt_sla.delete(0, tk.END)
+
+    def iniciar(self):
+        self.root.mainloop()
+
+f = Fornecedor_View(tk.Tk())
+f.iniciar()
