@@ -8,132 +8,90 @@ class Estado_Controller:
         self.dao = dao
         self.view = view
 
-    def save(self):
+    def new(self): # botão NOVO irá limpar todos os campos 
+        self.view.limpar_campos()
 
+    def save(self):
         try:
 
             nome, sigla = self.view.ler_dados_estado()
-
             estado = Estado(
                 None,
                 nome,
                 sigla
             )
-
             self.dao.save(estado)
-
+            self.get_all()
             self.view.exibir_mensagem(
                 "Estado cadastrado com sucesso!"
             )
-
         except ValueError as e:
-
             self.view.exibir_mensagem(
                 f"Erro: {str(e)}",
                 False
             )
-
         except KeyboardInterrupt:
-
             self.view.exibir_mensagem(
                 "Operação cancelada pelo usuário.",
                 False
             )
 
     def get_all(self):
-
         estados = self.dao.get_all()
-
         self.view.exibir_estados(estados)
+        # self.view.aguardar_entrada()
+        
 
-        self.view.aguardar_entrada()
+    def selecionar_estado(self):
+        try:
+            id_estado = self.view.get_id_selecionado()
+            self.estado_selecionado = self.dao.get_by_id(
+                id_estado
+            )
+            self.view.preencher_campos(
+                self.estado_selecionado
+            )
+        except IndexError:
+            pass
 
     def update(self):
-
         try:
-
-            estados = self.dao.get_all()
-
-            self.view.exibir_estados(estados)
-
-            id_estado = int(self.view.ler_id())
-
-            estado_existente = self.dao.get_by_id(id_estado)
-
-            if estado_existente is None:
-
-                self.view.exibir_mensagem(
-                    "Estado não encontrado.",
-                    False
-                )
-
-                return
-
-            nome, sigla = self.view.ler_dados_estado(
-                estado_existente
-            )
-
-            estado_existente.atualizar_dados(
-                nome,
-                sigla
-            )
-
-            self.dao.update(estado_existente)
-
-            self.view.exibir_mensagem(
-                "Estado atualizado com sucesso!"
-            )
-
+            if self.estado_selecionado is None:
+                self.view_exibir_mensagem("Selecione um estado na lista.", False)
+                return 
+            nome, sigla = self.view.ler_dados_estado()
+            self.estado_selecionado.atualizar_dados(nome, sigla)
+            self.dao.update(self.estado_selecionado)
+            self.get_all()
+            self.exibir_mensagem("Estado atualizado com sucesso!")
         except ValueError as e:
+            self.view_exibir_mensagem(f"Erro: {str(e)}", False)
 
-            self.view.exibir_mensagem(
-                f"Erro: {str(e)}",
-                False
-            )
-
+        
     def delete(self):
-
+        if self.fornecedor_selecionado is None:
+            self.view.exibir_mensagem("Selecione um estado na lista.", False)
+            return
+        if not self.view_confirmar_exclusao():
+            return 
         try:
-
-            estados = self.dao.get_all()
-
-            self.view.exibir_estados(estados)
-
-            id_estado = int(self.view.ler_id())
-
-            sucesso = self.dao.delete(id_estado)
-
+            sucesso = self.dao.delete(self.estado_selecionado.id)
             if sucesso:
-
-                self.view.exibir_mensagem(
-                    "Estado excluído com sucesso!"
-                )
-
+                self.estado_selecionado= None
+                self.view.limpar_campos()
+                self.get_all()
+                self.view.exibir_mensagem("Estado excluido com sucesso!")
             else:
-
-                self.view.exibir_mensagem(
-                    "Estado não encontrado.",
-                    False
-                )
-
-        except ValueError:
-
-            self.view.exibir_mensagem(
-                "Erro: ID inválido.",
-                False
-            )
+                self.view.exibir_mensagem("Estado não encontrado!", False)
+        except Exception as e:
+            self.view.exibir_mensagem("Problemas ao excluir estados.", False)
 
     def inicializar_sistema(self):
-
         while True:
-
             os.system('cls' if os.name == 'nt' else 'clear')
-
             opcao = self.view.renderizar_menu()
-
             if opcao == 0:
                 break
-
             elif opcao == 1:
                 self.save()
 
@@ -147,8 +105,5 @@ class Estado_Controller:
                 self.delete()
 
             else:
-
                 self.view.exibir_mensagem(
-                    "Opção inválida.",
-                    False
-                )
+                    "Opção inválida.", False)

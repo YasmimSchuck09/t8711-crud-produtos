@@ -5,13 +5,16 @@ class Fornecedor_Controller:
     def __init__(self, dao, view):
         self.dao = dao
         self.view = view
+
     def new(self):
-        pass
+        self.view.limpar_campos()
+
     def save(self):
         try:
             razao_social, nome_fantasia, cnpj, sla_atendimento = self.view.ler_dados_fornecedor()
             fornecedor = Fornecedor(None,razao_social, nome_fantasia, cnpj, sla_atendimento)
             self.dao.save(fornecedor)
+            self.get_all()
             self.view.exibir_mensagem("Fornecedor cadastrado com sucesso!")
         except ValueError:
             self.view.exibir_mensagem("Erro: Entrada inválida. Tente novamente.", False)
@@ -19,34 +22,50 @@ class Fornecedor_Controller:
     def get_all(self):
         fornecedores = self.dao.get_all()
         self.view.exibir_fornecedores(fornecedores)
-        self.view.aguardar_entrada()
+
+    def selecionar_fornecedor(self, event):
+
+        try:
+            id_fornecedor = self.view.get_id_selecionado()
+            self.fornecedor_selecionado = self.dao.get_by_id(
+                id_fornecedor
+            )
+            self.view.preencher_campos(
+                self.fornecedor_selecionado
+            )
+        except IndexError:
+            pass        
     def update(self):
         try:
-            fornecedores = self.dao.get_all()
-            self.view.exibir_fornecedores(fornecedores)
-            id_fornecedor = int(self.view.ler_id())
-            fornecedor_existente = self.dao.get_by_id(id_fornecedor)
-            if fornecedor_existente:
-                razao_social, nome_fantasia, cnpj, sla_atendimento = self.view.ler_dados_fornecedor(fornecedor_existente)
-                fornecedor_existente.atualizar_dados(razao_social, nome_fantasia, cnpj, sla_atendimento)
-                self.dao.update(fornecedor_existente)
-                self.view.exibir_mensagem("Fornecedor atualizado com sucesso!")
-            else:
-                self.view.exibir_mensagem("Fornecedor não encontrado.", False) 
+            if self.fornecedor_selecionado is None:
+                self.view.exibir_mensagem("Selecione um fornecedor na lista.", False)
+                return
+            razao_social, nome_fantasia, cnpj, sla_atendimento = self.view.ler_dados_fornecedor()
+            self.fornecedor_selecionado.atualizar_dados(razao_social, nome_fantasia, cnpj, sla_atendimento)
+            self.dao.update(self.fornecedor_selecionado)
+            self.get_all()
+            self.view.exibir_mensagem("Fornecedor atualizado com sucesso!")
         except ValueError as e:
             self.view.exibir_mensagem(f"Erro: {str(e)}", False)
-    def delete(self):    
+
+    def delete(self):
+        if self.fornecedor_selecionado is None:
+            self.view.exibir_mensagem("Selecione um fornecedor na lista.", False)
+            return
+        if not self.view.confirmar_exclusao():
+            return
         try:
-            fornecedores = self.dao.get_all()
-            self.view.exibir_fornecedores(fornecedores)
-            id_fornecedor = int(self.view.ler_id())
-            sucesso = self.dao.delete(id_fornecedor)
+            sucesso = self.dao.delete(self.fornecedor_selecionado.id)
             if sucesso:
+                self.fornecedor_selecionado = None
+                self.view.limpar_campos()
+                self.get_all()
                 self.view.exibir_mensagem("Fornecedor excluído com sucesso!")
             else:
                 self.view.exibir_mensagem("Fornecedor não encontrado.", False)
-        except ValueError:
-            self.view.exibir_mensagem("Erro: ID inválido", False)
+        except Exception as e:
+            self.view.exibir_mensagem("Problemas ao excluir fornecedor", False)
+
     def inicializar_sistema(self):
         while True:
             os.system('cls' if os.name == 'nt' else 'clear')
