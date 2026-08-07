@@ -80,9 +80,10 @@ class Produto_DAO(DAO):
                     """        
             cursor.execute(sql,(id,))
             registro = cursor.fetchone()
-            fornecedor = self._fornecedor_dao.get_by_id(registro[4])
+            
             if registro is None:
                 return None
+            fornecedor = self._fornecedor_dao.get_by_id(registro[4])
             return Produto(
                 registro[0],
                 registro[1],

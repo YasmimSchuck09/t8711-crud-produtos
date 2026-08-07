@@ -4,7 +4,7 @@ from app.core.database import Database
 
 # Componentes de Produtos
 from app.dao.produto_dao import Produto_DAO
-from app.views.produto_view import Produto_Terminal_View
+from app.views.produto_view import Produto_View
 from app.controllers.produto_controller import Produto_Controller
 
 # Componentes de Estados
@@ -48,10 +48,9 @@ class ErpApplication:
         self._dao_estados = Estado_DAO(
             self._database
         )
-
         self._ctrl_estados = Estado_Controller(
             dao=self._dao_estados,
-            view = None
+            view=None
         )
 
         # ===========================
@@ -93,7 +92,7 @@ class ErpApplication:
         self._ctrl_produtos = Produto_Controller(
             dao=self._dao_produtos,
             fornecedor_dao=self._dao_fornecedores,
-            view=Produto_Terminal_View()
+            view=None
         )
 
         # ===========================
@@ -148,6 +147,8 @@ class ErpApplication:
             return -1
 
     def run(self):
+        
+          
         while True:
             opcao = self._renderizar_menu_principal()
             if opcao == 0:
@@ -155,7 +156,12 @@ class ErpApplication:
                 break
 
             elif opcao == 1:
-                self._ctrl_produtos.inicializar_sistema()
+                janela_produtos = tk.Tk()
+                self._ctrl_produtos.view = Produto_View(
+                    janela_produtos,
+                    self._ctrl_produtos
+                )
+                self._ctrl_produtos.view.iniciar()
 
             elif opcao == 2:
                 janela_fornecedores = tk.Tk()
@@ -163,9 +169,9 @@ class ErpApplication:
                     janela_fornecedores,
                     self._ctrl_fornecedores
                 )                
-                self._ctrl_fornecedores.get_all()
                 self._ctrl_fornecedores.view.iniciar()
                 
+
             elif opcao == 3:
                 self._ctrl_usuarios.inicializar_sistema()
 
@@ -173,13 +179,12 @@ class ErpApplication:
                 self._ctrl_clientes.inicializar_sistema()
 
             elif opcao == 5:
-                    janela_estados = tk.Tk()
-                    self._ctrl_estados.view = Estado_View(
+                janela_estados = tk.Tk()
+                self._ctrl_estados.view = Estado_View(
                     janela_estados,
                     self._ctrl_estados
-                )                
-                    self._ctrl_estados.get_all()
-                    self._ctrl_estados.view.iniciar()
+                )
+                self._ctrl_estados.view.iniciar()
 
             elif opcao == 6:
                self._ctrl_cidades.inicializar_sistema()

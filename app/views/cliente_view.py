@@ -1,190 +1,423 @@
-from colorama import init, Fore, Style
-from app.core.data_utils import Data_Utils
+from app.models.produto import Produto
 
-init(autoreset=True)
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
 
+class Cliente_View:
+    def __init__(self, root, controller):
+        self.root = root 
+        self.controller = controller 
+        self._usuario = []
+        self.configurar_janela()
+        self.criar_componentes()
+        self.configurar_treeview()
+        self.configurar_eventos()
 
-class Cliente_Terminal_View:
+    def configurar_janela(self):
+        self.root.title("CRUD de Clientes")
+        self.root.geometry("700x500")
+        self.root.resizable(False, False)
 
-    def __init__(self):
-        self.titulo_sistema = "=== CRUD DE CLIENTES (MVC) ==="
-
-    def renderizar_menu(self):
-
-        print(Fore.CYAN + Style.BRIGHT + self.titulo_sistema)
-        print("1 - Cadastrar cliente")
-        print("2 - Listar clientes")
-        print("3 - Atualizar cliente")
-        print("4 - Excluir cliente")
-        print("0 - Sair")
-        print(Fore.CYAN + "=" * 60)
-
-        try:
-            return int(input("Escolha uma opção: "))
-        except ValueError:
-            return -1
-
-    def ler_campo(self, rotulo, valor_atual=None):
-
-        if valor_atual is not None:
-            prompt = f"{rotulo} [{Fore.GREEN}{valor_atual}{Style.RESET_ALL}]: "
-        else:
-            prompt = f"{rotulo}: "
-
-        valor = input(prompt)
-
-        if valor == "" and valor_atual is not None:
-            return valor_atual
-
-        return valor
-
-    def ler_dados_cliente(self, cliente_existente=None):
-
-        print(Fore.CYAN + Style.BRIGHT + "=== CADASTRO DE CLIENTE ===")
-
-        nome = self.ler_campo(
-            "Nome do cliente",
-            cliente_existente.nome if cliente_existente else None
+    def criar_componentes(self):
+        self.lbl_titulo = tk.Label(
+            self.root,
+            text = "Cadastro de clientes",
+            font = ("Arial", 16, "bold"),
+        )
+        self.lbl_titulo.grid(
+            row = 0,
+            column = 0,
+            columnspan = 4,
+            padx = 5,
+            pady = 5
+        )
+        self.frm_dados = tk.LabelFrame(
+            self.root,
+            text = "Dados dos clientes"
+        )
+        self.frm_dados.grid(
+            row = 1,
+            column = 0,
+            columnspan = 4,
+            padx = 10,
+            pay = 5,
+            sticky = "ew"
+        )
+        self.lbl_id = tk.Label(
+            self.frm_dados,
+            text = "ID:"
+        )
+        self.lbl_id.grid(
+            row = 0,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_id = tk.Entry(
+            self.frm_dados,
+            width = 10,
+            state = "readonly"
+        )
+        self.txt_id.grid(
+            row = 0,
+            column = 1,
+            padx = 5,
+            pady  = 5,
+            sticky = "w"
+        )
+        self.lbl_nome = tk.Label(
+            self.frm_dados,
+            text = "Nome:"
+        )
+        self.lbl_nome.grid(
+            row = 1,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_nome = tk.Entry(
+            self.frm_dados,
+            width = 40
+        )
+        self.txt_nome.grid(
+            row = 1,
+            column = 1,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_cidades = tk.Label(
+            self.frm_dados,
+            text = "Cidades:"
+        )
+        self.lbl_cidades.grid(
+            row = 1,
+            column = 2,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.cmb_cidades = ttk.Combobox( #campos de opção de resposta 
+            self.frm_dados,
+            width = 37,
+            state = "readonly" #não sera possivel o usuario digitar, somente selecionar a opção
+        )
+        self.cmb_cidades.grid(
+            row = 1,
+            column = 3,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_data_nascimento = tk.Label(
+            self.frm_dados,
+            text = "Data de nascimento:"
+        )
+        self.lbl_data_nascimento.grid(
+            row = 2,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_data_nascimento = tk.Entry(
+            self.frm_dados,
+            width = 10
+        )
+        self.txt_data_nascimento.grid(
+            row = 2,
+            column = 1,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_limite_credito = tk.Label(
+            self.frm_dados,
+            text = "Limite de credito:"
+        )
+        self.lbl_limite_credito.grid(
+            row = 2,
+            column = 2,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_limite_credito = tk.Entry(
+            self.frm_dados,
+            width = 20
+        )
+        self.txt_limite_credito.grid(
+            row = 2,
+            column = 3,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.frm_botoes = tk.Frame(
+            self.frm_dados,
+            border = 2,
+            relief = "groove"
+        )
+        self.frm_botoes.grid(
+            row = 4,
+            column = 0,
+            padx = 10,
+            pady = 5,
+            columnspan = 4,
+        )
+        self.btn_novo = tk.Button(
+            self.frm_botoes,
+            text = "Novo",
+            width = 15
+        )
+        self.btn_novo.grid(
+            row = 0,
+            column = 0,
+            padx = 5,
+            pady = 5
+        )
+        self.btn_salvar = tk.Button(
+            self.frm_botoes,
+            text = "Salvar",
+            width = 15
+        )
+        self.btn_salvar.grid(
+            row = 0,
+            column = 1,
+            padx = 5,
+            pady = 5
+        )
+        self.btn_alterar = tk.Button(
+            self.frm_botoes,
+            text = "Alterar",
+            width = 15
+        )
+        self.btn_alterar.grid(
+            row = 0,
+            column = 2,
+            padx = 5,
+            pady = 5
+        )
+        self.btn_excluir = tk.Button(
+            self.frm_botoes,
+            text = "Excluir",
+            width = 15
+        )
+        self.btn_excluir.grid(
+            row = 0,
+            column = 3,
+            padx = 5,
+            pady = 5
+        )
+        self.btn_fechar = tk.Button(
+            self.frm_botoes,
+            text = "Fechar",
+            width = 15
+        )
+        self.btn_fechar.grid(
+            row = 0,
+            column = 4,
+            padx = 5,
+            pady = 5
+        )
+        self.tbl_clientes = ttk.Treeview(
+            self.root,
+            height = 10
+        )
+        self.tbl_clientes.grid(
+            row = 3,
+            column = 0,
+            columnspan = 4,
+            padx = 10,
+            pady = 10,
+            sticky = "nsew"
         )
 
-        data_nascimento = self.ler_campo(
-            "Data de nascimento",
-            Data_Utils.data_para_string(
-                cliente_existente.data_nascimento
-            ) if cliente_existente else None
+    def configurar_treeview(self):
+        self.tbl_clientes["columns"] = (
+            "id",
+            "nome",
+            "data_nascimento",
+            "limite_credito",
+            "cidade"
+        )
+        self.tbl_clientes.column(
+            "#0",
+            width = 0,
+            stretch = False
+        )
+        self.tbl_clientes.column(
+            "id",
+            width = 10,
+            anchor = "center"
+        )
+        self.tbl_clientes.column(
+            "nome",
+            width = 40
+        )
+        self.tbl_clientes.column(
+            "data_nascimento",
+            width = 10
+        )
+        self.tbl_clientes.column(
+            "limite_credito",
+            width = 20
+        )
+        self.tbl_clientes.column(
+            "cidade",
+            width = 40
+        )
+        
+        self.tbl_clientes.heading(
+            "id",
+            text = "ID"
+        )
+        self.tbl_clientes.heading(
+            "nome",
+            text = "Nome"
+        )
+        self.tbl_clientes.heading(
+            "data_nascimento",
+            text = "Data de nascimento"
+        )
+        self.tbl_clientes.heading(
+            "limite_credito",
+            text = "Limite de Credito"
+        )
+        self.tbl_clientes.heading(
+            "cidade",
+            text = "Cidade"
         )
 
-        limite_credito = float(
-            self.ler_campo(
-                "Limite de crédito",
-                str(cliente_existente.limite_credito)
-                if cliente_existente else None
-            )
+    def configurar_eventos(self):
+        self.btn_novo.config(
+            command = self.controller.new
+        )
+        self.btn_salvar.config(
+            command = self.controller.save
+        )
+        self.btn_alterar.config(
+            command = self.controller.update
+        )
+        self.btn_excluir.config(
+            command = self.controller.delete
+        )
+        self.btn_fechar.config(
+            command = self.fechar
+        )
+        self.tbl_clientes.bind(
+            "<<TreeviewSelect>>",
+            self.controller.selecionar_clientes
+
         )
 
-        return nome, data_nascimento, limite_credito
-
-    def exibir_estados(self, estados):
-
-        print(Fore.YELLOW + "\n--- ESTADOS DISPONÍVEIS ---")
-
-        print(
-            f"{'ID':<4} | "
-            f"{'UF':<4} | "
-            f"{'ESTADO':<30}"
-        )
-
-        print("-" * 45)
-
-        for estado in estados:
-
-            print(
-                f"{estado.id:<4} | "
-                f"{estado.sigla:<4} | "
-                f"{estado.nome:<30}"
-            )
-
-        print("-" * 45)
-
-    def ler_estado(self, estado_atual=None):
-
-        if estado_atual is None:
-
-            return input("Informe o ID do estado: ")
-
-        valor = input(
-            f"Estado [{Fore.GREEN}{estado_atual}{Style.RESET_ALL}]: "
-        )
-
-        if valor == "":
-            return estado_atual
-
-        return valor
-
-    def exibir_cidades(self, cidades):
-
-        print(Fore.YELLOW + "\n--- CIDADES DISPONÍVEIS ---")
-
-        print(
-            f"{'ID':<4} | "
-            f"{'CIDADE':<30} | "
-            f"{'UF':<3}"
-        )
-
-        print("-" * 45)
-
+    def carregar_cidades(self, cidades):
+        self._cidades = cidades
+        valores = []
         for cidade in cidades:
-
-            print(
-                f"{cidade.id:<4} | "
-                f"{cidade.nome:<30} | "
-                f"{cidade.estado.sigla:<3}"
+            valores.append(
+                f"{cidade.id} - {cidade.nome}"
             )
+        self.cmb_cidades["values"] = valores
+        self.cmb_cidades.set("")
 
-        print("-" * 45)
+    def preencher_campos(self, cliente):
 
-    def ler_cidade(self, cidade_atual=None):
-
-        if cidade_atual is None:
-
-            return input("Informe o ID da cidade: ")
-
-        valor = input(
-            f"Cidade [{Fore.GREEN}{cidade_atual}{Style.RESET_ALL}]: "
+        self.limpar_campos()
+        self.txt_id.config(state = "normal")
+        self.txt_id.insert(
+            0,
+            str(cliente.id)
         )
+        self.txt_id.config(state = "readonly")
+        self.txt_nome.insert(
+            0,
+            cliente.nome
+        )
+        self.txt_data_nascimento.insert(
+            0,
+            str(cliente.data_nascimento)
+        )
+        self.txt_limite_credito.insert(
+            0,
+            str(cliente.limite_credito)
+        )
+        for indice, cidade in enumerate(self._cidades):
+            if cidade.id == cidade.cliente.id:
+                self.cmb_cidades.current(indice)
+                break
 
-        if valor == "":
-            return cidade_atual
+    def limpar_campos(self):
+        self.txt_id.config(state = "normal")
+        self.txt_id.delete(0, tk.END)
+        self.txt_id.config(state = "readonly")
+        self.txt_nome.delete(0, tk.END)
+        self.txt_data_nascimento.delete(0, tk.END)
+        self.txt_limite_credito.delete(0, tk.END)
+        self.cmb_cidades.set("")
+        self.txt_nome.focus()
 
-        return valor
+    def limpar_treeview(self):
+        for item in self.tbl_clientes.get_children():
+            self.tbl_clientes.delete(item)
 
-    def ler_id(self):
 
-        return input("Digite o ID do cliente: ")
+    def get_id_selecionado(self):
+        item = self.tbl_clientes.selection()[0]
+        return self.tbl_clientes.item(item)["values"][0]
+    
+    def confirmar_exclusao(self):
+        return messagebox.askyesno(
+            "Confirmação",
+            "Deseja realmente excluir este cliente?"
+        )
+    
+    def ler_dados_cliente(self):
+        nome = self.txt_nome.get()
+        data_nascimento = int(self.txt_data_nascimento.get())
+        limite_credito = float(self.txt_limite_credito.get())
+        indice = self.cmb_cidades.current()
+        if indice < 0:
+            raise ValueError("Selecione um fornecedor.")
+        fornecedor = self._fornecedores[indice]
+        return nome, data_nascimento, limite_credito, fornecedor
 
+    def exibir_mensagem(self, mensagem, sucesso=True):
+        if sucesso:
+            messagebox.showinfo(
+                "Mini ERP",
+                mensagem
+            )
+        else:
+            messagebox.showerror(
+                "Mini ERP",
+                mensagem
+            )
     def exibir_clientes(self, clientes):
 
-        print(Fore.YELLOW + "\n--- TABELA DE CLIENTES ---")
-
-        if not clientes:
-
-            print("Nenhum cliente cadastrado.")
-            return
-
-        print(
-            f"{'ID':<4} | "
-            f"{'NOME':<20} | "
-            f"{'NASCIMENTO':<12} | "
-            f"{'IDADE':<5} | "
-            f"{'LIMITE':<12} | "
-            f"{'CIDADE':<25} | "
-            f"{'UF':<3}"
-        )
-
-        print("-" * 105)
+        self.limpar_treeview()
 
         for cliente in clientes:
 
-            print(
-                f"{cliente.id:<4} | "
-                f"{cliente.nome:<20} | "
-                f"{Data_Utils.data_para_string(cliente.data_nascimento):<12} | "
-                f"{cliente.idade:<5} | "
-                f"{cliente.limite_credito:<12.2f} | "
-                f"{cliente.cidade.nome:<25} | "
-                f"{cliente.cidade.estado.sigla:<3}"
+            self.tbl_clientes.insert(
+                "",
+                tk.END,
+                values=(
+                    cliente.id,
+                    cliente.nome,
+                    cliente.data_nascimento,
+                    f"{cliente.limite_credito:.2f}",
+                    cliente.cidades.nome_fantasia
+                )
             )
+    def fechar(self):
+        self.root.destroy()
 
-        print("-" * 105)
+    def iniciar(self):
+        self.controller.carregar_cidades()
+        self.controller.get_all()
+        self.root.mainloop()
 
-    def exibir_mensagem(self, mensagem, sucesso=True):
-
-        cor = Fore.GREEN if sucesso else Fore.RED
-
-        print(cor + f"\n[STATUS] {mensagem}\n")
-
-        self.aguardar_entrada()
-
-    def aguardar_entrada(self):
-
-        input(Fore.WHITE + "Pressione Enter para continuar...")

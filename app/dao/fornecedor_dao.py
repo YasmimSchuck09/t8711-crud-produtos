@@ -67,15 +67,15 @@ class Fornecedor_DAO(DAO):
             sql =   """
                         SELECT
                             ID,
-                            NOME_FANTASIA,
                             RAZAO_SOCIAL,
+                            NOME_FANTASIA,
                             CNPJ,
                             SLA_ATENDIMENTO
                         FROM
                             FORNECEDOR
                         WHERE
                             ID = %s
-                    """        
+                    """
             cursor.execute(sql,(id,))
             registro = cursor.fetchone()
             if registro is None:
