@@ -1,9 +1,10 @@
-import os
 from app.models.fornecedor import Fornecedor
 
 class Fornecedor_Controller:
-    def __init__(self, dao, view):
+    def __init__(self, dao, categoria_dao, fornecedor_categoria_dao, view):
         self.dao = dao
+        self.categoria_dao = categoria_dao
+        self.fornecedor_categoria_dao = fornecedor_categoria_dao
         self.view = view
         self.fornecedor_selecionado = None
 
@@ -74,24 +75,32 @@ class Fornecedor_Controller:
         except Exception as e:
             self.view.exibir_mensagem("Problemas ao excluir fornecedor", False)
 
-    def inicializar_sistema(self):
-        while True:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            opcao = self.view.renderizar_menu()
-            if opcao == 0:
-                break
-            elif opcao == 1:
-                self.save()
-            
-            elif opcao == 2:
-                self.get_all()
-            
-            elif opcao == 3:
-                self.update()
-                
-            elif opcao == 4:
-                self.delete()
-                
-            else:
-                self.view.exibir_mensagem("Opção inválida. Tente novamente.", False)
-                
+    def abrir_categorias(self):
+        if self.fornecedor_selecionado is None:
+            self.view.exibir_mensagem("Selecione um fornecedor na lista.", False)
+            return
+        categorias_disponiveis = self.categoria_dao.get_all()
+        if not categorias_disponiveis:
+            self.view.exibir_mensagem("Cadastre categorias antes de associá-las a um fornecedor.", False)
+            return
+        self.fornecedor_selecionado.categorias = self.fornecedor_categoria_dao.get_categorias_por_fornecedor(
+            self.fornecedor_selecionado
+        )
+        self.view.abrir_categorias(
+            self.fornecedor_selecionado,
+            categorias_disponiveis
+        )
+
+    def salvar_categorias(self, view_categorias, fornecedor, categorias_selecionadas):
+        try:
+            self.fornecedor_categoria_dao.substituir_categorias_do_fornecedor(
+                fornecedor,
+                categorias_selecionadas
+            )
+            fornecedor.categorias = self.fornecedor_categoria_dao.get_categorias_por_fornecedor(
+                fornecedor
+            )
+            view_categorias.exibir_mensagem("Categorias do fornecedor atualizadas com sucesso!")
+            view_categorias.fechar()
+        except Exception as e:
+            view_categorias.exibir_mensagem("Não foi possível salvar as categorias do fornecedor.", False)

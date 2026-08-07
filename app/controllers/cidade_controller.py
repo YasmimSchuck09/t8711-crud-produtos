@@ -1,8 +1,8 @@
-import os
 from app.models.cidade import Cidade
 
 
 class Cidade_Controller:
+
     def __init__(self, dao, estado_dao, view):
         self.dao = dao
         self.estado_dao = estado_dao
@@ -18,8 +18,12 @@ class Cidade_Controller:
 
     def save(self):
         try:
-            nome, estado = self.view.ler_dados_cidades()
-            cidade = Cidade(None, nome, estado)
+            nome, estado = self.view.ler_dados_cidade()
+            cidade = Cidade(
+                None,
+                nome,
+                estado
+            )
             self.dao.save(cidade)
             self.get_all()
             self.view.exibir_mensagem("Cidade cadastrada com sucesso!")
@@ -33,25 +37,28 @@ class Cidade_Controller:
     def selecionar_cidade(self, event):
         try:
             id_cidade = self.view.get_id_selecionado()
-            self.produto_selecionado = self.dao.get_by_id(
+            self.cidade_selecionada = self.dao.get_by_id(
                 id_cidade
             )
+            self.view.preencher_campos(
+                self.cidade_selecionada
+            )
+
         except IndexError:
             pass
 
     def update(self):
         try:
             if self.cidade_selecionada is None:
-                self.view.exibir_mensaegem("Selecionar uma cidade na lista", False)
-                return 
+                self.view.exibir_mensagem("Selecione uma cidade na lista.", False)
+                return
             nome, estado = self.view.ler_dados_cidade()
             self.cidade_selecionada.atualizar_dados(nome, estado)
             self.dao.update(self.cidade_selecionada)
             self.get_all()
             self.view.exibir_mensagem("Cidade atualizada com sucesso!")
         except ValueError as e:
-            self.view_exibir_mensgaem(f"Erro: {str(e)}", False)
-
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
 
     def delete(self):
         if self.cidade_selecionada is None:
@@ -70,25 +77,3 @@ class Cidade_Controller:
                 self.view.exibir_mensagem("Cidade não encontrada.", False)
         except Exception as e:
             self.view.exibir_mensagem("Problemas ao excluir cidade", False)
-            
-
-    def inicializar_sistema(self):
-        while True:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            opcao = self.view.renderizar_menu()
-            if opcao == 0:
-                break
-            elif opcao == 1:
-                self.save()
-
-            elif opcao == 2:
-                self.get_all()
-
-            elif opcao == 3:
-                self.update()
-
-            elif opcao == 4:
-                self.delete()
-
-            else:
-                self.view.exibir_mensagem("Opção inválida. Tente novamente.", False)

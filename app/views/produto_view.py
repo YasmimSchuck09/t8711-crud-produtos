@@ -1,3 +1,5 @@
+
+
 from app.models.produto import Produto
 
 import tkinter as tk
@@ -47,6 +49,10 @@ class Produto_View:
             pady = 5,
             sticky = "ew"
         )
+        self.frm_dados.grid_columnconfigure(0, weight=0)
+        self.frm_dados.grid_columnconfigure(1, weight=1)
+        self.frm_dados.grid_columnconfigure(2, weight=0)
+        self.frm_dados.grid_columnconfigure(3, weight=1)
         self.lbl_id = tk.Label(
             self.frm_dados,
             text = "ID:"
@@ -103,10 +109,10 @@ class Produto_View:
             pady = 5,
             sticky = "w"
         )
-        self.cmb_fornecedores = ttk.Combobox( #campos de opção de resposta 
+        self.cmb_fornecedores = ttk.Combobox(
             self.frm_dados,
             width = 37,
-            state = "readonly" #não sera possivel o usuario digitar, somente selecionar a opção
+            state = "readonly"
         )
         self.cmb_fornecedores.grid(
             row = 1,
@@ -388,7 +394,8 @@ class Produto_View:
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir este produto?"
+            "Deseja realmente excluir este produto?",
+            parent=self.root
         )
 
     def ler_dados_produto(self):
@@ -405,12 +412,14 @@ class Produto_View:
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
         else:
             messagebox.showerror(
                 "Mini ERP",
-                mensagem
+                mensagem,
+                parent=self.root
             )
     def exibir_produtos(self, produtos):
 
@@ -436,4 +445,3 @@ class Produto_View:
     def iniciar(self):
         self.controller.carregar_fornecedores()
         self.controller.get_all()
-        self.root.mainloop()

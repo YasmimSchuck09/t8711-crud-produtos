@@ -1,24 +1,46 @@
-import os
-from app.models.produto import Produto
+from app.models.cliente import Cliente
+from app.core.data_utils import Data_Utils
 
 class Cliente_Controller:
-    def __init__(self, dao, cidade_dao, view):
+
+    def __init__(
+        self,
+        dao,
+        cidade_dao,
+        estado_dao,
+        view
+    ):
         self.dao = dao
         self.cidade_dao = cidade_dao
+        self.estado_dao = estado_dao
         self.view = view
         self.cliente_selecionado = None
 
     def new(self):
         self.view.limpar_campos()
 
-    def carregar_cidades(self):
-        cidades = self.cidade_dao.get_all()
+    def carregar_estados(self):
+        estados = self.estado_dao.get_all()
+        self.view.carregar_estados(estados)
+
+    def carregar_cidades_do_estado_selecionado(self, event):
+        id_estado = self.view.get_estado_selecionado_id()
+        if id_estado is None:
+            self.view.carregar_cidades([])
+            return
+        cidades = self.cidade_dao.get_by_estado(id_estado)
         self.view.carregar_cidades(cidades)
 
     def save(self):
         try:
-            nome, data_nascimento, limite_credito, cidade = self.view.ler_dados_clientes()
-            cliente = Produto(None, nome, data_nascimento, limite_credito, cidade)
+            nome, data_nascimento, limite_credito, cidade = self.view.ler_dados_cliente()
+            cliente = Cliente(
+                None,
+                nome,
+                Data_Utils.string_para_data(data_nascimento),
+                limite_credito,
+                cidade
+            )
             self.dao.save(cliente)
             self.get_all()
             self.view.exibir_mensagem("Cliente cadastrado com sucesso!")
@@ -26,18 +48,23 @@ class Cliente_Controller:
             self.view.exibir_mensagem(f"Erro: {str(e)}", False)
 
     def get_all(self):
-        cliente = self.dao.get_all()
-        self.view.exibir_cliente(cliente)
+        clientes = self.dao.get_all()
+        self.view.exibir_clientes(clientes)
 
     def selecionar_cliente(self, event):
         try:
-            id_cliente= self.view.get_id_selecionado()
+            id_cliente = self.view.get_id_selecionado()
             self.cliente_selecionado = self.dao.get_by_id(
                 id_cliente
             )
-            self.view.preencher_campos(
-                self.cliente_selecionado
+            cidades = self.cidade_dao.get_by_estado(
+                self.cliente_selecionado.cidade.estado.id
             )
+            self.view.preencher_campos(
+                self.cliente_selecionado,
+                cidades
+            )
+
         except IndexError:
             pass
 
@@ -46,8 +73,13 @@ class Cliente_Controller:
             if self.cliente_selecionado is None:
                 self.view.exibir_mensagem("Selecione um cliente na lista.", False)
                 return
-            nome, data_nascimento, limite_credito, cidade = self.view.ler_dados_clientes()
-            self.produto_selecionado.atualizar_dados(nome, data_nascimento, limite_credito, cidade)
+            nome, data_nascimento, limite_credito, cidade = self.view.ler_dados_cliente()
+            self.cliente_selecionado.atualizar_dados(
+                nome,
+                Data_Utils.string_para_data(data_nascimento),
+                limite_credito,
+                cidade
+            )
             self.dao.update(self.cliente_selecionado)
             self.get_all()
             self.view.exibir_mensagem("Cliente atualizado com sucesso!")
@@ -71,24 +103,3 @@ class Cliente_Controller:
                 self.view.exibir_mensagem("Cliente não encontrado.", False)
         except Exception as e:
             self.view.exibir_mensagem("Problemas ao excluir cliente", False)
-
-    def inicializar_sistema(self):
-        while True:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            opcao = self.view.renderizar_menu()
-            if opcao == 0:
-                break
-            elif opcao == 1:
-                self.save()
-
-            elif opcao == 2:
-                self.get_all()
-
-            elif opcao == 3:
-                self.update()
-
-            elif opcao == 4:
-                self.delete()
-
-            else:
-                self.view.exibir_mensagem("Opção inválida. Tente novamente.", False)
