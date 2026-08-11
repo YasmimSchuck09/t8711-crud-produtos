@@ -45,9 +45,9 @@ class Fornecedor_Categoria_View:
             padx = 10,
             anchor = "w"
         )
-        self.lst_categorias = tk.Listbox(
+        self.lst_categorias = tk.Listbox( # caixa onde mostra uma lista de dados 
             self.root,
-            selectmode = tk.MULTIPLE,
+            selectmode = tk.MULTIPLE, # nesse caso é permitido marcar mais que uma opção
             height = 15
         )
         self.lst_categorias.pack(

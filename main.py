@@ -37,6 +37,11 @@ from app.dao.cliente_dao import Cliente_DAO
 from app.views.cliente_view import Cliente_View
 from app.controllers.cliente_controller import Cliente_Controller
 
+# Componentes de perfis
+from app.dao.perfis_dao import Perfis_DAO
+from app.views.perfis_view import Perfis_View
+from app.controllers.perfis_controller import Perfis_Controller
+
 import tkinter as tk
 
 
@@ -57,6 +62,7 @@ class ErpApplication:
         self._janela_categorias = None
         self._janela_usuarios = None
         self._janela_clientes = None
+        self._janela_perfis = None
 
         self._configurar_janela()
 
@@ -166,12 +172,29 @@ class ErpApplication:
             view=None
         )
 
+
+        # ===========================
+        # PERFIS
+        # ===========================
+
+        self._dao_perfis = Perfis_DAO(
+            self._database,
+            self._dao_perfis
+        )
+
+        self._ctrl_perfis = Perfis_Controller(
+            dao=self._dao_estados,
+            view=None
+        )
+
+
         self._criar_menu()
 
     def _configurar_janela(self):
         self._root.title("Sistema Corporativo ERP")
         self._root.state("zoomed")
 
+#MODIFICAR MAIN ADICIONANDO A TABELA DE PERFIS
     def _criar_menu(self):
 
         menu_principal = tk.Menu(self._root)
@@ -222,6 +245,8 @@ class ErpApplication:
             menu=menu_gestao_estoque
         )
 
+# modificar apenas o criar menu 
+
         menu_principal.add_command(
             label="Sair",
             command=self._root.destroy
@@ -264,6 +289,9 @@ class ErpApplication:
 
     def _abrir_clientes(self):
         self._abrir_janela("_janela_clientes", Cliente_View, self._ctrl_clientes)
+
+    def _abrir_perfis(self):
+        self._abrir_janela("_janela_perfis", Perfis_View, self._ctrl_perfis)
 
     def run(self):
         self._root.mainloop()

@@ -100,6 +100,29 @@ class Usuario_View:
             pady = 5,
             sticky = "w"
         )
+        self.lbl_perfis = tk.Label(
+            self.frm_dados,
+            text = "Perfis:"
+        )
+        self.lbl_perfis.grid(
+            row = 1,
+            column = 2,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.cmb_perfis = ttk.Combobox(
+            self.frm_dados,
+            width = 37,
+            state = "readonly"
+        )
+        self.cmb_perfis.grid(
+            row = 1,
+            column = 3,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
         self.lbl_email = tk.Label(
             self.frm_dados,
             text = "Email:"
@@ -278,7 +301,8 @@ class Usuario_View:
             "nascimento",
             "idade",
             "cidade",
-            "estado"
+            "estado",
+            "usuario"
         )
         self.tbl_usuarios.column(
             "#0",
@@ -317,6 +341,11 @@ class Usuario_View:
             width = 15,
             anchor = "center"
         )
+        self.tbl_usuarios.column(
+            "perfis",
+            width = 30,
+            anchor = "center"
+        )
         self.tbl_usuarios.heading(
             "id",
             text = "ID"
@@ -344,6 +373,10 @@ class Usuario_View:
         self.tbl_usuarios.heading(
             "estado",
             text = "UF"
+        )
+        self.tbl_usuarios.heading(
+            "perfis",
+            text = "Perfis"
         )
     def configurar_eventos(self):
         self.btn_novo.config(
@@ -389,13 +422,24 @@ class Usuario_View:
         self.cmb_cidades["values"] = valores
         self.cmb_cidades.set("")
 
+    def carregar_perfis(self, perfis):
+        self.perfis = perfis
+        valores = []
+        for perfil in perfis:
+            valores.append(
+                f"{perfil.id} - {perfil.nome}"
+            )
+        self.cmb_perfis["values"] = valores
+        self.cmb_perfis.set("")
+
+
     def get_estado_selecionado_id(self):
         indice = self.cmb_estados.current()
         if indice < 0:
             return None
         return self._estados[indice].id
 
-    def preencher_campos(self, usuario, cidades):
+    def preencher_campos(self, usuario, cidades, perfis):
 
         self.limpar_campos()
         self.txt_id.config(state = "normal")
@@ -443,6 +487,7 @@ class Usuario_View:
         self.cmb_cidades.set("")
         self.cmb_cidades["values"] = []
         self._cidades = []
+        self.cmb_perfis.delete(0, tk.END)
         self.txt_nome.focus()
 
     def limpar_treeview(self):

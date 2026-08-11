@@ -1,0 +1,64 @@
+from app.models.perfis import Perfis
+
+class Perfis_Controller:
+    def __init__(self, dao, view):
+        self.dao = dao 
+        self.view = view
+        self.perfis_selecionados = None 
+
+    def new (self):
+        self.view.limpar_campos()
+
+    def save(self):
+        try:
+            nome, descricao = self.view.ler_dados_perfis()
+            perfis = Perfis(None, nome, descricao)
+            self.dao.save(perfis)
+            self.get_all()
+            self.view.exibir_mensagem("Perfis cadastrados com sucesso!")
+        except ValueError as e:
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+
+    def get_all(self):
+        perfis = self.dao.get_all()
+        self.view.exibir_perfis(perfis)
+
+    def selecionar_perfis(self, event):
+        try:
+            id_perfis = self.view.get_id_selecionado()
+            self.perfis_selecionados = self.dao.get_by_id(
+                id_perfis
+            )
+            self.view.preencher_campos(
+                self.perfis_selecionados
+            )
+        except IndexError:
+            try:
+                if self.perfis_selecionadosis is None:
+                    self.view.exibir_mensagem("Selecione um perfil na lista.", False)
+                    return 
+                nome,descricao = self.view.ler_dados_perfis()
+                self.perfis_selecionados.atualizar_dados(nome, descricao)
+                self.dao.update(self.perfis_selecionados)
+                self.get_all()
+                self.view.exibir_mensagem("Perfil atualizado com sucesso!")
+            except ValueError as e:
+                self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+
+    def delete(self):
+        if self.perfis_selecionados is None:
+            self.view.exibir_mensagem("Selecione um perfil na lista.", False )
+            return 
+        if not self.view.confirmar_exclusao():
+            return 
+        try:
+            sucesso = self.dao.delete(self.perfis_selecionados.id)
+            if sucesso:
+                self.perfis_selecionados = None
+                self.view.limpar_campos()
+                self.get_all()
+                self.view.exibir_mensagem("Perfil excluido com sucesso!")
+            else:
+                self.view.exibir_mensagem("Perfil não encontrado.", False)
+        except Exception as e:
+            self.view.exibir_mensagem("Problemas ao excluir perfil", False)
