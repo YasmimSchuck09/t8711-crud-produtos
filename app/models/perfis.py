@@ -1,5 +1,3 @@
-from app.models.perfis import Perfis
-
 class Perfis:
     def __init__(self, id, nome, descricao):
         self._id = id

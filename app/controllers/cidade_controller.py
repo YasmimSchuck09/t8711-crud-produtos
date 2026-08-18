@@ -1,5 +1,5 @@
 from app.models.cidade import Cidade
-
+from app.core.idiomas import Idioma
 
 class Cidade_Controller:
 
@@ -26,9 +26,9 @@ class Cidade_Controller:
             )
             self.dao.save(cidade)
             self.get_all()
-            self.view.exibir_mensagem("Cidade cadastrada com sucesso!")
+            self.view.exibir_mensagem(Idioma.t("cidade.cadastro_sucesso"))
         except ValueError as e:
-            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+            self.view.exibir_mensagem(f"{Idioma.t('comum.erro_prefixo')}{Idioma.t(str(e))}", False)
 
     def get_all(self):
         cidades = self.dao.get_all()
@@ -50,19 +50,19 @@ class Cidade_Controller:
     def update(self):
         try:
             if self.cidade_selecionada is None:
-                self.view.exibir_mensagem("Selecione uma cidade na lista.", False)
+                self.view.exibir_mensagem(Idioma.t("cidade.selecionar_cidade"), False)
                 return
             nome, estado = self.view.ler_dados_cidade()
             self.cidade_selecionada.atualizar_dados(nome, estado)
             self.dao.update(self.cidade_selecionada)
             self.get_all()
-            self.view.exibir_mensagem("Cidade atualizada com sucesso!")
+            self.view.exibir_mensagem(Idioma.t("cidade.atualizacao_sucesso"))
         except ValueError as e:
-            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+            self.view.exibir_mensagem(f"{Idioma.t('comum.erro_prefixo')}{Idioma.t(str(e))}", False)
 
     def delete(self):
         if self.cidade_selecionada is None:
-            self.view.exibir_mensagem("Selecione uma cidade na lista.", False)
+            self.view.exibir_mensagem(Idioma.t("cidade.selecionar_cidade"), False)
             return
         if not self.view.confirmar_exclusao():
             return
@@ -72,8 +72,8 @@ class Cidade_Controller:
                 self.cidade_selecionada = None
                 self.view.limpar_campos()
                 self.get_all()
-                self.view.exibir_mensagem("Cidade excluída com sucesso!")
+                self.view.exibir_mensagem(Idioma.t("cidade.exclusao_concluida"))
             else:
-                self.view.exibir_mensagem("Cidade não encontrada.", False)
+                self.view.exibir_mensagem(Idioma.t("cidade.nao_cadastrada"), False)
         except Exception as e:
-            self.view.exibir_mensagem("Problemas ao excluir cidade", False)
+            self.view.exibir_mensagem(Idioma.t("cidade.problemas_exclusao"), False)

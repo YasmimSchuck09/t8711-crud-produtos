@@ -1,5 +1,6 @@
 from app.models.cidade import Cidade
 from app.core.data_utils import Data_Utils
+from app.core.idiomas import Idioma
 
 
 class Cliente:
@@ -74,7 +75,7 @@ class Cliente:
 
         if novo_limite_credito < 0:
             raise ValueError(
-                "O limite não pode ser negativo."
+                (Idioma.t("cliente.limite_negativo"))
             )
 
         self._nome = novo_nome

@@ -1,3 +1,5 @@
+from app.core.idiomas import Idioma
+
 class Fornecedor:
     def __init__(self, id, razao_social, nome_fantasia, cnpj, sla_atendimento, categorias=None):
         self._id = id
@@ -9,7 +11,7 @@ class Fornecedor:
 
     def validar_sla(self, sla):
         if sla < 0:
-            raise ValueError("O SLA de atendimento não pode ser negativo.")
+            raise ValueError(Idioma.t("fornecedor.erro_valor_negativo"))
 
     # Encapsulamento do ID
     @property

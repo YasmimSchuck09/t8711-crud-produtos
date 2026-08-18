@@ -1,5 +1,5 @@
 
-
+from app.core.idiomas import Idioma
 from app.models.categoria import Categoria
 
 import tkinter as tk
@@ -18,7 +18,7 @@ class Categoria_View:
         self.configurar_eventos()
 
     def configurar_janela(self):
-        self.root.title("CRUD de Categorias")
+        self.root.title(Idioma.t("CRUD de Categorias"))
         self.root.geometry("800x600")
         self.root.resizable(False, False)
 
@@ -26,7 +26,7 @@ class Categoria_View:
     def criar_componentes(self):
         self.lbl_titulo = tk.Label(
             self.root,
-            text = "Cadastro de Categorias",
+            text = Idioma.t("Cadastro de Categorias"),
             font = ("Arial", 16, "bold"),
         )
         self.lbl_titulo.grid(
@@ -38,7 +38,7 @@ class Categoria_View:
         )
         self.frm_dados = tk.LabelFrame(
             self.root,
-            text = "Dados da categoria"
+            text = Idioma.t("Dados da categoria")
         )
         self.frm_dados.grid(
             row = 1,
@@ -52,7 +52,7 @@ class Categoria_View:
         self.frm_dados.grid_columnconfigure(1, weight=1)
         self.lbl_id = tk.Label(
             self.frm_dados,
-            text = "ID:"
+            text = f"{Idioma.t('comum.id')}:"
         )
         self.lbl_id.grid(
             row = 0,
@@ -75,7 +75,7 @@ class Categoria_View:
         )
         self.lbl_nome = tk.Label(
             self.frm_dados,
-            text = "Nome:"
+            text = f"{Idioma.t('comum.nome')}:"
         )
         self.lbl_nome.grid(
             row = 1,
@@ -109,7 +109,7 @@ class Categoria_View:
         )
         self.btn_novo = tk.Button(
             self.frm_botoes,
-            text = "Novo",
+            text = Idioma.t("comum.novo"),
             width = 15
         )
         self.btn_novo.grid(
@@ -120,7 +120,7 @@ class Categoria_View:
         )
         self.btn_salvar = tk.Button(
             self.frm_botoes,
-            text = "Salvar",
+            text = Idioma.t("comum.salvar"),
             width = 15
         )
         self.btn_salvar.grid(
@@ -131,7 +131,7 @@ class Categoria_View:
         )
         self.btn_alterar = tk.Button(
             self.frm_botoes,
-            text = "Alterar",
+            text = Idioma.t("comum.alterar"),
             width = 15
         )
         self.btn_alterar.grid(
@@ -142,7 +142,7 @@ class Categoria_View:
         )
         self.btn_excluir = tk.Button(
             self.frm_botoes,
-            text = "Excluir",
+            text = Idioma.t("comum.excluir"),
             width = 15
         )
         self.btn_excluir.grid(
@@ -153,7 +153,7 @@ class Categoria_View:
         )
         self.btn_fechar = tk.Button(
             self.frm_botoes,
-            text = "Fechar",
+            text = Idioma.t("comum.fechar"),
             width = 15
         )
         self.btn_fechar.grid(
@@ -196,11 +196,11 @@ class Categoria_View:
         )
         self.tbl_categorias.heading(
             "id",
-            text = "ID"
+            text = Idioma.t("comum.id")
         )
         self.tbl_categorias.heading(
             "nome",
-            text = "Nome"
+            text = Idioma.t("comum.nome")
         )
     def configurar_eventos(self):
         self.btn_novo.config(
@@ -259,8 +259,8 @@ class Categoria_View:
     def confirmar_exclusao(self):
 
         return messagebox.askyesno(
-            "Confirmação",
-            "Deseja realmente excluir esta categoria?",
+            Idioma.t("comum.confirmacao"),
+            Idioma.t("categoria.confirmar_exclusao"),
             parent=self.root
         )
 

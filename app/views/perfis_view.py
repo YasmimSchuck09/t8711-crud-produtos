@@ -1,5 +1,5 @@
 
-
+from app.core.idiomas import Idioma
 from app.models.perfis import Perfis
 
 import tkinter as tk
@@ -17,14 +17,14 @@ class Perfis_View:
         self.configurar_eventos()
 
     def configurar_janela(self):
-        self.root.title("CRUD de Perfis")
+        self.root.title(Idioma.t("perfis.janela_titulo"))
         self.root.geometry("800x600")
         self.root.resizable(False, False)
 
     def criar_componentes(self):
         self.lbl_titulo = tk.Label(
             self.root,
-            text = "CRUD de Perfis",
+            text = (Idioma.t("perfis.titulo")),
             font = ("Arial", 16, "bold"),
         )
         self.lbl_titulo.grid(
@@ -36,7 +36,7 @@ class Perfis_View:
         )
         self.frm_dados = tk.LabelFrame(
             self.root,
-            text = "Dados do perfil"
+            text = (Idioma.t("perfis.dados_frame")),
         )
         self.frm_dados.grid(
             row = 1,
@@ -52,7 +52,7 @@ class Perfis_View:
         self.frm_dados.grid_columnconfigure(3, weight=1)
         self.lbl_id = tk.Label(
             self.frm_dados,
-            text = "ID:"
+            text = (Idioma.t("comum.id"))
         )
         self.lbl_id.grid(
             row = 0,
@@ -75,7 +75,7 @@ class Perfis_View:
         )
         self.lbl_nome = tk.Label(
             self.frm_dados,
-            text = "Nome:"
+            text = (Idioma.t("comum.nome"))
         )
         self.lbl_nome.grid(
             row = 1,
@@ -97,7 +97,7 @@ class Perfis_View:
         )
         self.lbl_descricao = tk.Label(
             self.frm_dados,
-            text = "Descrição:"
+            text = (Idioma.t("perfis.descricao"))
         )
         self.lbl_descricao.grid(
             row = 2,
@@ -108,7 +108,7 @@ class Perfis_View:
         )
         self.txt_descricao = tk.Entry(
             self.frm_dados,
-            width = 150
+            width = 100
         )
         self.txt_descricao.grid(
             row = 2,
@@ -123,15 +123,15 @@ class Perfis_View:
             relief = "groove"
         )
         self.frm_botoes.grid(
-            row = 3,
-            column = 0 ,
+            row = 4,
+            column = 0,
             padx = 10,
-            pay = 5,
-            columnspan= 4
+            pady = 5,
+            columnspan = 4,
         )
         self.btn_novo = tk.Button(
             self.frm_botoes,
-            text = "Novo",
+            text = (Idioma.t("comum.novo")),
             width = 15
         )
         self.btn_novo.grid(
@@ -142,7 +142,7 @@ class Perfis_View:
         )
         self.btn_salvar = tk.Button(
             self.frm_botoes,
-            text = "Salvar",
+            text = (Idioma.t("comum.salvar")),
             width = 15
         )
         self.btn_salvar.grid(
@@ -153,7 +153,7 @@ class Perfis_View:
         )
         self.btn_alterar = tk.Button(
             self.frm_botoes,
-            text = "Alterar",
+            text = (Idioma.t("comum.alterar")),
             width = 15
         )
         self.btn_alterar.grid(
@@ -164,7 +164,7 @@ class Perfis_View:
         )
         self.btn_excluir = tk.Button(
             self.frm_botoes,
-            text = "Excluir",
+            text = (Idioma.t("comum.excluir")),
             width = 15
         )
         self.btn_excluir.grid(
@@ -175,7 +175,7 @@ class Perfis_View:
         )
         self.btn_fechar = tk.Button(
             self.frm_botoes,
-            text = "Fechar",
+            text = (Idioma.t("comum.fechar")),
             width = 15
         )
         self.btn_fechar.grid(
@@ -186,10 +186,10 @@ class Perfis_View:
         )
         self.tbl_perfis = ttk.Treeview(
             self.root,
-            height= 10
+            height= 12
         )
         self.tbl_perfis.grid(
-            row = 3,
+            row = 2,
             column = 0,
             columnspan= 4,
             padx = 10, 
@@ -224,15 +224,15 @@ class Perfis_View:
 
         self.tbl_perfis.heading(
             "id",
-            text = "ID"
+            text = (Idioma.t("comum.id"))
         )
         self.tbl_perfis.heading(
             "nome",
-            text = "Nome"
+            text = (Idioma.t("comum.nome"))
         )
         self.tbl_perfis.heading(
             "descricao",
-            text = "Descrição"
+            text = (Idioma.t("perfis.descricao"))
         )
 
     def configurar_eventos(self):
@@ -299,8 +299,8 @@ class Perfis_View:
     def confirmar_exclusao(self):
 
         return messagebox.askyesno(
-            "Confirmação",
-            "Deseja realmente excluir este perfil?",
+            (Idioma.t("comum.confirmacao")),
+            (Idioma.t("perfis.confirmacao_exclusao")),
             parent=self.root
         )
     

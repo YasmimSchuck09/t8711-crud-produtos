@@ -1,12 +1,10 @@
-
-
 from app.models.usuario import Usuario
 from app.core.data_utils import Data_Utils
+from app.core.idiomas import Idioma
 
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-
 
 
 class Usuario_View:
@@ -15,49 +13,53 @@ class Usuario_View:
         self.controller = controller
         self._estados = []
         self._cidades = []
+        self._perfis = []
         self.configurar_janela()
         self.criar_componentes()
         self.configurar_treeview()
         self.configurar_eventos()
 
     def configurar_janela(self):
-        self.root.title("CRUD de Usuários")
+        self.root.title(Idioma.t("usuario.janela_titulo"))
         self.root.geometry("900x600")
         self.root.resizable(False, False)
-
 
     def criar_componentes(self):
         self.lbl_titulo = tk.Label(
             self.root,
-            text = "Cadastro de Usuários",
-            font = ("Arial", 16, "bold"),
+            text=(Idioma.t("usuario.titulo")),
+            font=("Arial", 16, "bold"),
         )
         self.lbl_titulo.grid(
-            row = 0,
-            column = 0,
-            columnspan = 4,
-            padx = 5,
-            pady = 5
+            row=0,
+            column=0,
+            columnspan=4,
+            padx=5,
+            pady=5
         )
+
         self.frm_dados = tk.LabelFrame(
             self.root,
-            text = "Dados do usuário"
+            text=(Idioma.t("usuario.dados_frame"))
         )
         self.frm_dados.grid(
-            row = 1,
-            column = 0,
+            row=1,
+            column=0,
             columnspan=4,
-            padx = 10,
-            pady = 5,
-            sticky = "ew"
+            padx=10,
+            pady=5,
+            sticky="ew"
         )
+
         self.frm_dados.grid_columnconfigure(0, weight=0)
         self.frm_dados.grid_columnconfigure(1, weight=1)
         self.frm_dados.grid_columnconfigure(2, weight=0)
         self.frm_dados.grid_columnconfigure(3, weight=1)
+
+        # ID
         self.lbl_id = tk.Label(
-            self.frm_dados,
-            text = "ID:"
+             self.frm_dados,
+            text = f"{Idioma.t('comum.id')}:"
         )
         self.lbl_id.grid(
             row = 0,
@@ -80,154 +82,173 @@ class Usuario_View:
         )
         self.lbl_nome = tk.Label(
             self.frm_dados,
-            text = "Nome:"
+            text = f"{Idioma.t('comum.nome')}:"
         )
         self.lbl_nome.grid(
-            row = 1,
-            column = 0,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=1,
+            column=0,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
         self.txt_nome = tk.Entry(
             self.frm_dados,
-            width = 40
+            width=40
         )
         self.txt_nome.grid(
-            row = 1,
-            column = 1,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=1,
+            column=1,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
+        # Perfil
         self.lbl_perfis = tk.Label(
             self.frm_dados,
-            text = "Perfis:"
+            text=(Idioma.t("usuario.perfil"))
         )
         self.lbl_perfis.grid(
-            row = 1,
-            column = 2,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=1,
+            column=2,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
         self.cmb_perfis = ttk.Combobox(
             self.frm_dados,
-            width = 37,
-            state = "readonly"
+            width=37,
+            state="readonly"
         )
         self.cmb_perfis.grid(
-            row = 1,
-            column = 3,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=1,
+            column=3,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
+        # Email
         self.lbl_email = tk.Label(
             self.frm_dados,
-            text = "Email:"
+            text=(Idioma.t("usuario.email"))
         )
         self.lbl_email.grid(
-            row = 1,
-            column = 2,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=2,
+            column=0,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
         self.txt_email = tk.Entry(
             self.frm_dados,
-            width = 40
+            width=40
         )
         self.txt_email.grid(
-            row = 1,
-            column = 3,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=2,
+            column=1,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
+        # Nascimento
         self.lbl_data_nascimento = tk.Label(
             self.frm_dados,
-            text = "Nascimento (DD/MM/AAAA):"
+            text=(Idioma.t("usuario.daat_nascimento"))
         )
         self.lbl_data_nascimento.grid(
-            row = 2,
-            column = 0,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=2,
+            column=2,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
         self.txt_data_nascimento = tk.Entry(
             self.frm_dados,
-            width = 20
+            width=20
         )
         self.txt_data_nascimento.grid(
-            row = 2,
-            column = 1,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=2,
+            column=3,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
+        # Estado
         self.lbl_estados = tk.Label(
             self.frm_dados,
-            text = "Estado:"
+            text=(Idioma.t("usuario.estado"))
         )
         self.lbl_estados.grid(
-            row = 2,
-            column = 2,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=3,
+            column=0,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
         self.cmb_estados = ttk.Combobox(
             self.frm_dados,
-            width = 37,
-            state = "readonly"
+            width=37,
+            state="readonly"
         )
         self.cmb_estados.grid(
-            row = 2,
-            column = 3,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=3,
+            column=1,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
+        # Cidade
         self.lbl_cidades = tk.Label(
             self.frm_dados,
-            text = "Cidade:"
+            text=(Idioma.t("usuario.cidade"))
         )
         self.lbl_cidades.grid(
-            row = 3,
-            column = 0,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=3,
+            column=2,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
         self.cmb_cidades = ttk.Combobox(
             self.frm_dados,
-            width = 37,
-            state = "readonly"
+            width=37,
+            state="readonly"
         )
         self.cmb_cidades.grid(
-            row = 3,
-            column = 1,
-            padx = 5,
-            pady = 5,
-            sticky = "w"
+            row=3,
+            column=3,
+            padx=5,
+            pady=5,
+            sticky="w"
         )
+
+        # Botões
         self.frm_botoes = tk.Frame(
             self.frm_dados,
-            border = 2,
-            relief = "groove"
+            border=2,
+            relief="groove"
         )
         self.frm_botoes.grid(
-            row = 4,
-            column = 0,
-            padx = 10,
-            pady = 5,
-            columnspan = 4,
+            row=4,
+            column=0,
+            padx=10,
+            pady=5,
+            columnspan=4,
         )
+
         self.btn_novo = tk.Button(
             self.frm_botoes,
-            text = "Novo",
+            text = (Idioma.t("comum.novo")),
             width = 15
         )
         self.btn_novo.grid(
@@ -238,7 +259,7 @@ class Usuario_View:
         )
         self.btn_salvar = tk.Button(
             self.frm_botoes,
-            text = "Salvar",
+            text = (Idioma.t("comum.salvar")),
             width = 15
         )
         self.btn_salvar.grid(
@@ -249,7 +270,7 @@ class Usuario_View:
         )
         self.btn_alterar = tk.Button(
             self.frm_botoes,
-            text = "Alterar",
+            text = (Idioma.t("comum.alterar")),
             width = 15
         )
         self.btn_alterar.grid(
@@ -260,7 +281,7 @@ class Usuario_View:
         )
         self.btn_excluir = tk.Button(
             self.frm_botoes,
-            text = "Excluir",
+            text = (Idioma.t("comum.excluir")),
             width = 15
         )
         self.btn_excluir.grid(
@@ -271,26 +292,28 @@ class Usuario_View:
         )
         self.btn_fechar = tk.Button(
             self.frm_botoes,
-            text = "Fechar",
+            text = (Idioma.t("comum.fechar")),
             width = 15
         )
         self.btn_fechar.grid(
-            row = 0,
-            column = 4,
-            padx = 5,
-            pady = 5
+            row=0,
+            column=4,
+            padx=5,
+            pady=5
         )
+
+        # Tabela
         self.tbl_usuarios = ttk.Treeview(
             self.root,
-            height = 10
+            height=10
         )
         self.tbl_usuarios.grid(
-            row = 5,
-            column = 0,
-            columnspan = 4,
-            padx = 10,
-            pady = 10,
-            sticky = "nsew"
+            row=5,
+            column=0,
+            columnspan=4,
+            padx=10,
+            pady=10,
+            sticky="nsew"
         )
 
     def configurar_treeview(self):
@@ -302,152 +325,190 @@ class Usuario_View:
             "idade",
             "cidade",
             "estado",
-            "usuario"
+            "perfil"
         )
+
         self.tbl_usuarios.column(
             "#0",
-            width = 0,
-            stretch = False
+            width=0,
+            stretch=False
         )
+
         self.tbl_usuarios.column(
             "id",
-            width = 10,
-            anchor = "center"
+            width=40,
+            anchor="center"
         )
+
         self.tbl_usuarios.column(
             "nome",
-            width = 40
+            width=120
         )
+
         self.tbl_usuarios.column(
             "email",
-            width = 50
+            width=150
         )
+
         self.tbl_usuarios.column(
             "nascimento",
-            width = 20,
-            anchor = "center"
+            width=90,
+            anchor="center"
         )
+
         self.tbl_usuarios.column(
             "idade",
-            width = 15,
-            anchor = "center"
+            width=50,
+            anchor="center"
         )
+
         self.tbl_usuarios.column(
             "cidade",
-            width = 30
+            width=100
         )
+
         self.tbl_usuarios.column(
             "estado",
-            width = 15,
-            anchor = "center"
+            width=50,
+            anchor="center"
         )
+
         self.tbl_usuarios.column(
-            "perfis",
-            width = 30,
-            anchor = "center"
+            "perfil",
+            width=100,
+            anchor="center"
         )
+
         self.tbl_usuarios.heading(
             "id",
-            text = "ID"
+            text=(Idioma.t("comum.id"))
         )
+
         self.tbl_usuarios.heading(
             "nome",
-            text = "Nome"
+            text=(Idioma.t("comum.nome"))
         )
+
         self.tbl_usuarios.heading(
             "email",
-            text = "Email"
+            text=(Idioma.t("usuario.email"))
         )
+
         self.tbl_usuarios.heading(
             "nascimento",
-            text = "Nascimento"
+            text=(Idioma.t("usuario.daat_nascimento"))
         )
+
         self.tbl_usuarios.heading(
             "idade",
-            text = "Idade"
+            text=(Idioma.t("usuario.idade"))
         )
+
         self.tbl_usuarios.heading(
             "cidade",
-            text = "Cidade"
+            text=(Idioma.t("usuario.cidade"))
         )
+
         self.tbl_usuarios.heading(
             "estado",
-            text = "UF"
+            text=(Idioma.t("usuario.estado"))
         )
+
         self.tbl_usuarios.heading(
-            "perfis",
-            text = "Perfis"
+            "perfil",
+            text=(Idioma.t("usuario.perfil"))
         )
+
     def configurar_eventos(self):
         self.btn_novo.config(
-            command = self.controller.new
+            command=self.controller.new
         )
+
         self.btn_salvar.config(
-            command = self.controller.save
+            command=self.controller.save
         )
+
         self.btn_alterar.config(
-            command = self.controller.update
+            command=self.controller.update
         )
+
         self.btn_excluir.config(
-            command = self.controller.delete
+            command=self.controller.delete
         )
+
         self.btn_fechar.config(
-            command = self.fechar
+            command=self.fechar
         )
+
         self.tbl_usuarios.bind(
             "<<TreeviewSelect>>",
             self.controller.selecionar_usuario
         )
+
         self.cmb_estados.bind(
             "<<ComboboxSelected>>",
             self.controller.carregar_cidades_do_estado_selecionado
         )
+
     def carregar_estados(self, estados):
         self._estados = estados
+
         valores = []
+
         for estado in estados:
             valores.append(
                 f"{estado.id} - {estado.nome}"
             )
+
         self.cmb_estados["values"] = valores
         self.cmb_estados.set("")
 
     def carregar_cidades(self, cidades):
         self._cidades = cidades
+
         valores = []
+
         for cidade in cidades:
             valores.append(
                 f"{cidade.id} - {cidade.nome}"
             )
+
         self.cmb_cidades["values"] = valores
         self.cmb_cidades.set("")
 
     def carregar_perfis(self, perfis):
-        self.perfis = perfis
+        self._perfis = perfis
+
         valores = []
+
         for perfil in perfis:
             valores.append(
                 f"{perfil.id} - {perfil.nome}"
             )
+
         self.cmb_perfis["values"] = valores
         self.cmb_perfis.set("")
 
-
     def get_estado_selecionado_id(self):
         indice = self.cmb_estados.current()
+
         if indice < 0:
             return None
+
         return self._estados[indice].id
 
     def preencher_campos(self, usuario, cidades, perfis):
 
         self.limpar_campos()
-        self.txt_id.config(state = "normal")
+
+        self.txt_id.config(state="normal")
+
         self.txt_id.insert(
             0,
             str(usuario.id)
         )
-        self.txt_id.config(state = "readonly")
+
+        self.txt_id.config(state="readonly")
 
         self.txt_nome.insert(
             0,
@@ -461,14 +522,18 @@ class Usuario_View:
 
         self.txt_data_nascimento.insert(
             0,
-            Data_Utils.data_para_string(usuario.data_nascimento)
+            Data_Utils.data_para_string(
+                usuario.data_nascimento
+            )
         )
 
+        # Estado
         for indice, estado in enumerate(self._estados):
             if estado.id == usuario.cidade.estado.id:
                 self.cmb_estados.current(indice)
                 break
 
+        # Cidades
         self.carregar_cidades(cidades)
 
         for indice, cidade in enumerate(self._cidades):
@@ -476,24 +541,36 @@ class Usuario_View:
                 self.cmb_cidades.current(indice)
                 break
 
+        # Perfis
+        self.carregar_perfis(perfis)
+
+        for indice, perfil in enumerate(self._perfis):
+            if perfil.id == usuario.perfil.id:
+                self.cmb_perfis.current(indice)
+                break
+
     def limpar_campos(self):
-        self.txt_id.config(state = "normal")
+        self.txt_id.config(state="normal")
         self.txt_id.delete(0, tk.END)
-        self.txt_id.config(state = "readonly")
+        self.txt_id.config(state="readonly")
+
         self.txt_nome.delete(0, tk.END)
         self.txt_email.delete(0, tk.END)
         self.txt_data_nascimento.delete(0, tk.END)
+
         self.cmb_estados.set("")
         self.cmb_cidades.set("")
+        self.cmb_perfis.set("")
+
         self.cmb_cidades["values"] = []
+
         self._cidades = []
-        self.cmb_perfis.delete(0, tk.END)
+
         self.txt_nome.focus()
 
     def limpar_treeview(self):
         for item in self.tbl_usuarios.get_children():
             self.tbl_usuarios.delete(item)
-
 
     def get_id_selecionado(self):
 
@@ -504,24 +581,46 @@ class Usuario_View:
     def confirmar_exclusao(self):
 
         return messagebox.askyesno(
-            "Confirmação",
-            "Deseja realmente excluir este usuário?",
+            (Idioma.t("comum.confirmacao")),
+            (Idioma.t("usuario.confirmar_exclusao")),
             parent=self.root
         )
 
     def ler_dados_usuario(self):
+
         nome = self.txt_nome.get()
+
         email = self.txt_email.get()
+
         data_nascimento = self.txt_data_nascimento.get()
+
         if not Data_Utils.validar_data(data_nascimento):
-            raise ValueError("Data de nascimento inválida. Use o formato DD/MM/AAAA.")
-        indice = self.cmb_cidades.current()
-        if indice < 0:
-            raise ValueError("Selecione uma cidade.")
-        cidade = self._cidades[indice]
-        return nome, email, data_nascimento, cidade
+            raise ValueError(
+                (Idioma.t("usuario.data_nascimetno_invalida"))
+            )
+
+        indice_cidade = self.cmb_cidades.current()
+
+        if indice_cidade < 0:
+            raise ValueError(
+                (Idioma.t("usuario.selecione_cidade"))
+            )
+
+        cidade = self._cidades[indice_cidade]
+
+        indice_perfil = self.cmb_perfis.current()
+
+        if indice_perfil < 0:
+            raise ValueError(
+                (Idioma.t("usuario.selecione_perfil"))
+            )
+
+        perfil = self._perfis[indice_perfil]
+
+        return nome, email, data_nascimento, cidade, perfil
 
     def exibir_mensagem(self, mensagem, sucesso=True):
+
         if sucesso:
             messagebox.showinfo(
                 "Mini ERP",
@@ -534,6 +633,7 @@ class Usuario_View:
                 mensagem,
                 parent=self.root
             )
+
     def exibir_usuarios(self, usuarios):
 
         self.limpar_treeview()
@@ -547,15 +647,20 @@ class Usuario_View:
                     usuario.id,
                     usuario.nome,
                     usuario.email,
-                    Data_Utils.data_para_string(usuario.data_nascimento),
+                    Data_Utils.data_para_string(
+                        usuario.data_nascimento
+                    ),
                     usuario.idade,
                     usuario.cidade.nome,
-                    usuario.cidade.estado.sigla
+                    usuario.cidade.estado.sigla,
+                    usuario.perfil.nome
                 )
             )
+
     def fechar(self):
         self.root.destroy()
 
     def iniciar(self):
         self.controller.carregar_estados()
+        self.controller.carregar_perfis()
         self.controller.get_all()
